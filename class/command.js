@@ -6,7 +6,7 @@ class Command {
     this.action = action;
   }
 
-  execute() {
+  execute () {
     this.action();
   }
 

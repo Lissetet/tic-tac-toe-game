@@ -78,6 +78,7 @@ class Screen {
       } else {
         Screen.render();
         Screen.commands[key.name].execute();
+
       }
     });
 

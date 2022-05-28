@@ -15,7 +15,7 @@ management skills.  Consider the API as a black box.  Review the documentation
 thoroughly to make sure that you understand the inputs and outputs, but don't
 peek inside unless you have extra time after completing the project.
 
-The API is documented below. Try out the commands to see how they work.
+The API is documented below. Try out the commands to see how they work. -->
 
 To process keypresses, you will need to load `Command` objects into the Screen
 API using `Screen.addCommand`. This function takes a `key` which triggers the
