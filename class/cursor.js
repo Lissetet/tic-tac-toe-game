@@ -1,3 +1,4 @@
+const { commands } = require("./screen");
 const Screen = require("./screen");
 
 class Cursor {
@@ -10,69 +11,40 @@ class Cursor {
     this.col = 0;
 
     this.gridColor = 'black';
-    this.cursorColor = 'yellow';
+    this.cursorColor = 'cyan';
 
   }
 
-  resetBackgroundColor() {
+  resetScreen (r, c) {
     Screen.setBackgroundColor(this.row, this.col, this.gridColor);
-  }
-
-  setBackgroundColor() {
+    this.row += r;
+    this.col += c;
     Screen.setBackgroundColor(this.row, this.col, this.cursorColor);
+    Screen.render();
   }
 
-  up = () => {
-    this.resetBackgroundColor();
-
-    if (this.row === 2) {
-      this.row--;
-    } else if(this.row === 1) {
-      this.row--;
+  up= () => {
+    if (this.row > 0 && this.row < this.numRows) {
+      this.resetScreen(-1, 0);
     }
-
-    this.setBackgroundColor();
-    Screen.render();
   }
 
   down = () => {
-    this.resetBackgroundColor();
-
-    if (this.row === 0) {
-      this.row++;
-    } else if(this.row === 1) {
-      this.row++;
+    if (this.row >= 0 && this.row < (this.numRows-1)) {
+      this.resetScreen(1, 0);
     }
-
-    this.setBackgroundColor();
-
-    Screen.render();
   }
 
   left = () => {
-    this.resetBackgroundColor();
-
-    if (this.col === 2) {
-      this.col--;
-    } else if(this.col === 1) {
-      this.col--;
+    if (this.col > 0 && this.col < this.numCols) {
+      this.resetScreen(0, -1);
     }
-
-    this.setBackgroundColor();
-    Screen.render();
   }
 
   right = () => {
-    this.resetBackgroundColor();
-
-    if (this.col === 0) {
-      this.col++;
-    } else if(this.col === 1) {
-      this.col++;
+    if (this.col >= 0 && this.col < (this.numCols-1)) {
+      this.resetScreen(0, 1);
     }
-
-    this.setBackgroundColor();
-    Screen.render();
   }
 
 }

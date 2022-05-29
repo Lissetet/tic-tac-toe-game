@@ -1,3 +1,5 @@
+const Screen = require("./screen");
+
 class Command {
 
   constructor(key, description, action) {
@@ -6,7 +8,7 @@ class Command {
     this.action = action;
   }
 
-  execute () {
+  execute() {
     this.action();
   }
 

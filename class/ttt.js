@@ -17,92 +17,103 @@ class TTT {
     Screen.initialize(3, 3);
     Screen.setGridlines(true);
 
-    Screen.addCommand('z', 'move down', this.cursor.down);
-    Screen.addCommand('a', 'move up', this.cursor.up);
-    Screen.addCommand('s', 'move left', this.cursor.left);
-    Screen.addCommand('d', 'move right', this.cursor.right);
-    Screen.addCommand('o', 'player O move', this.makeMoveO);
-    Screen.addCommand('x', 'player X move', this.makeMoveX);
+    // Replace this with real commands
+    Screen.addCommand('h', 'show commands', Screen.printCommands);
+    Screen.addCommand('up', 'move up', this.cursor.up);
+    Screen.addCommand('down', 'move down', this.cursor.down);
+    Screen.addCommand('left', 'move left', this.cursor.left);
+    Screen.addCommand('right', 'move right', this.cursor.right);
+    Screen.addCommand('return', 'make move', this.makeMove);
+
+    Screen.setMessage(`Welcome! \nPress 'h' to see list of commands. \n \nPlayer ${this.playerTurn}, make your move.`)
+
+    Screen.setBackgroundColor(this.cursor.row, this.cursor.col, this.cursor.cursorColor);
 
     Screen.render();
   }
 
-   makeMove (player) {
-    Screen.setGrid(this.cursor.row, this.cursor.col, player);
-    this.grid[this.cursor.row][this.cursor.col] = player;
-    TTT.checkWin(this.grid);
+  makeMove = () => {
+    let player = this.playerTurn;
+
+    //check if space is blank
+    if (Screen.grid[this.cursor.row][this.cursor.col] === ' ') {
+      //place move
+      Screen.setGrid(this.cursor.row, this.cursor.col, player);
+
+      //check for winner
+      let winner = TTT.checkWin(Screen.grid);
+      if (winner !== false) {
+        TTT.endGame(winner);
+      }
+
+      //next player's turn
+      if (this.playerTurn === 'X') {
+        this.playerTurn = 'O';
+      } else {
+        this.playerTurn = 'X'
+      }
+      Screen.setMessage(`Player ${this.playerTurn}, it's your move.`)
+
+    } else {
+      Screen.setMessage(`Player ${this.playerTurn}, it's your move. \n \nInvalid move, space is already taken.`)
+    }
+    Screen.render();
+
   }
 
-  makeMoveO = () => this.makeMove('O');
-  makeMoveX = () => this.makeMove('X');
-
   static checkWin(grid) {
+    //default winner to false, no winner yet
+    let winner = false;
 
+    //declare empty array to hold all possible win combinations
+    const possibleWins = [];
 
-    let playerX = 0;
-    let playerO = 0;
-
-    //check sets helper function
+    //helper function to check for wins
     function check (arr) {
       if (arr.every((el) => el === 'X')) {
-        playerX++;
+        winner = 'X';
       } else if (arr.every((el) => el === 'O')) {
-        playerO++;
+        winner = 'O';
       }
     }
 
-    //check if no win yet
+    //function to check if there are blank spaces left
     function isGameOver () {
+      let blanks = possibleWins.flat().filter(el => el === ' ').length;
 
-      let entries = [...grid[0], ...grid[1], ...grid[2]];
-      let blanks = entries.filter(el => el === ' ');
+      //set winner to tie if no blanks left and no winner
+      if (blanks === 0 && winner === false) {
+        winner = 'T'
+      }
+    }
 
-      if (blanks.length > 0) {
-        return false;
+    //add horizontal rows to possibleWins
+    grid.forEach(row => possibleWins.push(row));
+
+    //add diagonals to possibleWins
+    possibleWins.push([grid[0][0], grid[1][1], grid [2][2]]);
+    possibleWins.push([grid[0][2], grid[1][1], grid [2][0]]);
+
+    //add columns to possibleWins
+    for (let c = 0; c < grid[0].length; c++) {
+      //populate col array with column c
+      let col = [];
+        for (let i = 0; i < grid.length; i++) {
+          let el = grid[i][c];
+          col.push(el);
+        }
+
+      // add col array to possibleWins
+      possibleWins.push(col);
       }
 
-      return true;
+    //check for wins
+    possibleWins.forEach(check);
 
-    }
+    //check if game is over
+    isGameOver();
 
-    //check for vertical wins
-    for (let c = 0; c < 3; c++) {
-    //populate col array with column c
-    let col = [];
-      for (let i = 0; i < 3; i++) {
-        let el = grid[i][c];
-        col.push(el);
-      }
-
-    // run check helper function on col
-    check (col);
-    }
-
-    // check for horizontal wins
-    grid.forEach(check);
-
-    // check for diagonal wins
-    let diag1 = [grid[0][0], grid[1][1], grid [2][2]];
-    let diag2 = [grid[0][2], grid[1][1], grid [2][0]];
-
-    check (diag1);
-    check (diag2);
-
-    if (playerX === playerO && isGameOver()) {
-      isGameOver();
-      TTT.endGame('T')
-      return 'T'
-    } else if (playerX < playerO) {
-      TTT.endGame('O')
-      return 'O'
-    } else if (playerX > playerO) {
-      TTT.endGame('X')
-      return 'X'
-    } else {
-      return false;
-    }
-
-
+    return winner;
 
   }
 
